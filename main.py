@@ -1,6 +1,7 @@
 import cv2
 from matplotlib import pyplot as plt
 from matplotlib import gridspec as gs
+from matplotlib.pyplot import cm
 import numpy as np
 import scipy.ndimage as ndimage
 
@@ -85,13 +86,19 @@ def local_maxima(image):
     return msk
 
 
+class Contour:
+    contour = 'contour'
+
+    def __init__(self, label, x, y):
+        self.label = label
+        self.x = x
+        self.y = y
+
+
 def connected_contours(msk):
     output = cv2.connectedComponentsWithStats(
         msk, 4)
     (numLabels, labels, stats, centroids) = output
-
-    print(numLabels)
-
 
     label_hue = np.uint8(179*labels/np.max(labels))
     blank_ch = 255*np.ones_like(label_hue)
@@ -106,21 +113,24 @@ def connected_contours(msk):
     cv2.imshow('labeled.png', labeled_img)
     cv2.waitKey()
 
-    contour10x = []
-    contour10y = []
-
-    for i in range(len(labels)):
-        for j in range(len(labels[i])):
-            if labels[i][j] == 16:
-                print(labels[i][j])
-                contour10x.append(j)
-                contour10y.append(i)
+    contour_list = []
+    for label in range(numLabels):
+        contour = Contour(str(label), [], [])
+        for i in range(len(labels)):
+            for j in range(len(labels[i])):
+                if labels[i][j] == label+1:
+                    contour.x.append(j)
+                    contour.y.append(len(labels)-i)
+        contour_list.append(contour)
 
 
     fig = plt.figure(figsize=(5, 5))
     gs1 = gs.GridSpec(nrows=1, ncols=1)
     ax0 = fig.add_subplot(gs1[:, 0])
-    ax0.scatter(contour10x,contour10y, color='green')
+
+    color = cm.gnuplot(np.linspace(0, 1, len(contour_list)))
+    for i,c in zip(range(len(contour_list)), color):
+        ax0.scatter(contour_list[i].x,contour_list[i].y, color=c)
     ax0.axis([0, 300, 0, 300])
     plt.pause(10)
 
