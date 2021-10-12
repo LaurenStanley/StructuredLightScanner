@@ -6,11 +6,12 @@ import numpy as np
 import scipy.ndimage as ndimage
 
 
-#Import Image
+# Import Image
 def image_import():
-    #path = r'C:\Users\lesta\Downloads\2671.jpg'
-    path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\StackTest.png'
-    #path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\man (Gray)\v1\36.bmp'
+    # Other test images
+    # path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\StackTest.png'
+    # path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\man (Gray)\v1\36.bmp'
+    path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\TroughTest.png'
     image = cv2.imread(path)
     #cv2.imshow('Source', image)
     #cv2.waitKey(0)
@@ -18,8 +19,8 @@ def image_import():
     return image
 
 
+# Convert image to grayscale
 def convert_to_grayscale(image):
-    #Convert Image to Grayscale
     img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     #cv2.imshow('Grayscale', img_gray)
     #cv2.waitKey(0)
@@ -27,6 +28,7 @@ def convert_to_grayscale(image):
     return img_gray
 
 
+# Convert image to binary using the mean intensity of the grayscale image
 def convert_to_binary(img_gray):
     rows_mean_values = []
     for i in range(len(img_gray)):
@@ -42,9 +44,8 @@ def convert_to_binary(img_gray):
     return img_bi
 
 
+# OpenCV Contour Detect - this was a test of a different possible method
 def contour_detect(image, img_bi):
-    #OpenCV Contour Detect - this was a test of a different possible method lol
-
     contours, hierarchy = cv2.findContours(img_bi, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     img_contour = cv2.drawContours(image, contours, -1, (0,255,75), 2)
     cv2.imshow('Contours', img_contour)
@@ -52,14 +53,15 @@ def contour_detect(image, img_bi):
     cv2.destroyAllWindows()
 
 
+#or intensity filtered images
 def local_maxima(image):
-    #Close Contours binary areas, blur to reduce noise
-    img_bi_closed = cv2.morphologyEx(image, cv2.MORPH_CLOSE,np.ones((2,2)))
+    # Close Contours binary areas, blur to reduce noise -
+    img_bi_closed = cv2.morphologyEx(image, cv2.MORPH_CLOSE, np.ones((2, 2)))
     #cv2.imshow('Closed', img_bi_closed)
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
 
-    img_bi_closed_blurred = cv2.GaussianBlur(img_bi_closed, (5,5),0)
+    img_bi_closed_blurred = cv2.GaussianBlur(img_bi_closed, (5, 5), 0)
 
     #cv2.imshow('Closed, Blurred', img_bi_closed_blurred)
     #cv2.waitKey(0)
@@ -68,17 +70,43 @@ def local_maxima(image):
     img_bi_closed_blurred = img_bi_closed_blurred.sum(axis=2)
     #this is the juice - find the local maxima by column, return as a booleam
     mx = np.zeros(img_bi_closed_blurred.shape)
-    #for c in range(1, len(img_bi_closed_blurred)):
-    #lm = ndimage.filters.maximum_filter(img_bi_closed_blurred, footprint=np.ones((1,9)))
-    #    msk = (img_bi_closed_blurred == lm)
-
-    lm = ndimage.filters.maximum_filter(img_bi_closed_blurred, footprint=np.ones((10 ,1)))
+    lm = ndimage.filters.maximum_filter(img_bi_closed_blurred, footprint=np.ones((1, 10)))
     msk = (img_bi_closed_blurred == lm)
-
 
     #Convert to image
     msk = msk.astype(np.uint8)  #convert to an unsigned byte
-    msk*=255
+    msk *= 255
+
+    cv2.imshow('Mask', msk)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return msk
+
+def local_maxima2(image):
+    # For binary filtered images
+    # Close Contours binary areas, blur to reduce noise
+    img_bi_closed = cv2.morphologyEx(image, cv2.MORPH_CLOSE,np.ones((2,2)))
+    cv2.imshow('Closed', img_bi_closed)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    img_bi_closed_blurred = cv2.GaussianBlur(img_bi_closed, (5,5),0)
+
+    #cv2.imshow('Closed, Blurred', img_bi_closed_blurred)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+
+    # This is the juice - find the local maxima by column, return as a booleam
+    mx = np.zeros(img_bi_closed_blurred.shape)
+    #for c in range(1, len(img_bi_closed_blurred)):
+
+    lm = ndimage.filters.maximum_filter(img_bi_closed_blurred, footprint=np.ones((1 ,10)))
+    msk1 = (img_bi_closed_blurred != mx)
+    msk = (msk1 == lm)
+
+    # Convert to image
+    msk = msk.astype(np.uint8)  # convert to an unsigned byte
+    msk *= 255
 
     cv2.imshow('Mask', msk)
     cv2.waitKey(0)
@@ -95,7 +123,8 @@ class Contour:
         self.y = y
 
 
-def connected_contours(msk):
+def connected_contours(msk, height, width):
+    # Get connected contours - as pixels which are in contact
     output = cv2.connectedComponentsWithStats(
         msk, 4)
     (numLabels, labels, stats, centroids) = output
@@ -131,16 +160,17 @@ def connected_contours(msk):
     color = cm.gnuplot(np.linspace(0, 1, len(contour_list)))
     for i,c in zip(range(len(contour_list)), color):
         ax0.scatter(contour_list[i].x,contour_list[i].y, color=c)
-    ax0.axis([0, 300, 0, 300])
-    plt.pause(10)
+    ax0.axis([0, width, 0, height])
+    plt.pause(20)
+
 
 def main():
     image = image_import()
     img_gray = convert_to_grayscale(image)
     img_bi = convert_to_binary(img_gray)
-    #contour_detect(image, img_bi)
     maxima_mask = local_maxima(image)
-    connected_contours(maxima_mask)
+    maxima_mask = local_maxima2(img_bi)
+    connected_contours(maxima_mask, image.shape[0], image.shape[1])
 
 if __name__ == "__main__":
     main()
