@@ -35,6 +35,7 @@ def image_import():
 def convert_to_grayscale(image):
     img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image_display('Grayscale', img_gray)
+
     return img_gray
 
 
@@ -47,12 +48,10 @@ def convert_to_binary(img_gray):
     overall_mean_value = int(np.mean(rows_mean_values)*1.7)
     ret, img_bi = cv2.threshold(img_gray, overall_mean_value, 255, cv2.THRESH_BINARY_INV)
     image_display('Binary', img_bi)
-    # Invert Binary Image
-    #imagem = cv2.bitwise_not(img_bi)
-    #cv2.imshow('Binary', imagem)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
 
+    # Invert Binary Image
+    imagem = cv2.bitwise_not(img_bi)
+    image_display('Binary', imagem)
     return img_bi
 
 
@@ -101,6 +100,9 @@ def local_maxima2(image):
     # This is the juice - find the local maxima by column, return as a booleam
     mx = np.zeros(img_bi_closed_blurred.shape)
     #for c in range(1, len(img_bi_closed_blurred)):
+
+    #Footprint for test image from MSpaint
+    #lm = ndimage.filters.maximum_filter(img_bi_closed_blurred, footprint=np.ones((1, 1)))
 
     lm = ndimage.filters.maximum_filter(img_bi_closed_blurred, footprint=np.ones((1, 6)))
     msk1 = (img_bi_closed_blurred != mx)
@@ -170,7 +172,7 @@ def main():
     #maxima_mask = local_maxima(image)
     maxima_mask = local_maxima2(img_bi)
     contour_list = connected_contours(maxima_mask, image.shape[0], image.shape[1])
-    processor.find_3D_shape(contour_list)
+    processor.find_3D_shape(contour_list, image.shape[0], image.shape[1])
 
 if __name__ == "__main__":
     main()
