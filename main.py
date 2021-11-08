@@ -3,12 +3,12 @@ import processor
 import ContourReader
 import ImageFunctions
 
-show_plot = True
+show_plot = False
 
 
 # Import Image
 def image_import():
-    # Other test images
+    # Test images
     # path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\StackTest.png'
     # path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\man (Gray)\v1\36.bmp'
     # path = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\TroughTest.png'

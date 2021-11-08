@@ -1,5 +1,5 @@
 import cv2
-import nump as np
+import numpy as np
 
 show_images = False
 
