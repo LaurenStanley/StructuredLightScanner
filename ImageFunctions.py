@@ -26,12 +26,12 @@ def convert_to_binary(image):
     for i in range(len(img_gray)):
         row_mean_value = np.mean(img_gray[i])
         rows_mean_values.append(row_mean_value)
-    overall_mean_value = int(np.mean(rows_mean_values)*1.7)
+    overall_mean_value = int(np.mean(rows_mean_values)*2)
     ret, img_bi = cv2.threshold(img_gray, overall_mean_value, 255, cv2.THRESH_BINARY_INV)
     image_display('Binary', img_bi)
 
     # Invert Binary Image
     imagem = cv2.bitwise_not(img_bi)
     image_display('Binary', imagem)
-    return img_bi
+    return imagem
 

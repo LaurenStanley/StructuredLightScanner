@@ -84,7 +84,8 @@ def connected_contours(msk, height, width, show_plot):
     output = cv2.connectedComponentsWithStats(
         msk, 4)
     (numLabels, labels, stats, centroids) = output
-    print(numLabels)
+    print(labels)
+
 
     label_hue = np.uint8(179*labels/np.max(labels))
     blank_ch = 255*np.ones_like(label_hue)
