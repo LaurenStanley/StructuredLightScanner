@@ -26,7 +26,7 @@ def image_import():
 
 def images_import():
     #img_dir = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\BinaryPaintTest2'
-    img_dir = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\FiguresSmallerSet'
+    img_dir = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\Figures'
     data_path = os.path.join(img_dir, '*g')
     files = glob.glob(data_path)
     data = []
@@ -34,6 +34,7 @@ def images_import():
         print(f1)
         img = cv2.imread(f1)
         data.append(img)
+    data.reverse()
     return data
 
 
@@ -51,6 +52,7 @@ def contour_process(binary_images):
         contour_list.append(ContourReader.connected_contours(maxima_mask, img_bi.shape[0], img_bi.shape[1], show_plot))
     return contour_list
 
+
 def main():
     data = images_import()
     # img_bi = ImageFunctions.convert_to_binary(image)
@@ -58,7 +60,7 @@ def main():
     #contour_process(binary_images)
     contour_list = BinaryEncodingInterpreter.code_cracker(binary_images)
 
-    #processor.find_3D_shape(contour_list, binary_images[0].shape[0], binary_images[0].shape[1])
+    processor.find_3D_shape(contour_list, binary_images[0].shape[0], binary_images[0].shape[1])
 
 
 if __name__ == "__main__":
