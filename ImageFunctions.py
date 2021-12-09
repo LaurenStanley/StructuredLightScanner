@@ -26,7 +26,8 @@ def convert_to_binary(image):
     for i in range(len(img_gray)):
         row_mean_value = np.mean(img_gray[i])
         rows_mean_values.append(row_mean_value)
-    overall_mean_value = int(np.mean(rows_mean_values)*2)
+    overall_mean_value = int(np.mean(rows_mean_values)*1.65)
+    #print(overall_mean_value)
     ret, img_bi = cv2.threshold(img_gray, overall_mean_value, 255, cv2.THRESH_BINARY_INV)
     image_display('Binary', img_bi)
 
