@@ -34,6 +34,7 @@ def code_cracker(images):
 
     #ImageFunctions.image_display('labeled.png', labeled_img)
     #cv2.imshow('labeled.png', labeled_img)
+    #cv2.imwrite('labeled.png', labeled_img)
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
     binary_contour_list = create_binary_contour_list(label_list, new_image)

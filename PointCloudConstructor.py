@@ -13,7 +13,7 @@ def find_3D_shape_vert(blank_list, shape_list):
     ax2.set_title('3D Plot')
     #ax2.set_xlim(0, width)
     ax2.set_xlabel('X')
-    #ax2.set_ylim(-100, 50)
+    ax2.set_ylim(-50, 50)
     ax2.set_ylabel('Y')
     #ax2.set_zlim(0, height)
     ax2.set_zlabel('Z')

@@ -12,7 +12,7 @@ show_plot = False
 
 
 def images_import():
-    img_dir = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\Monkey'
+    img_dir = r'C:\Users\lesta\PycharmProjects\StructuredLightScanner\TestImages\Sphere'
     data_path = os.path.join(img_dir, '*g')
     files = glob.glob(data_path)
     horiz = []
@@ -62,7 +62,7 @@ def import_background():
     blank_horiz, blank_vert = images_import_blank()
     blank_binary_images_v = images_to_binary(blank_vert)
     blank_contour_list_v = BinaryEncodingInterpreter.code_cracker(blank_binary_images_v)
-    pickle_dump(blank_contour_list_v, 'BlankFile')
+    #pickle_dump(blank_contour_list_v, 'BlankFile')
     return blank_contour_list_v
 
 
@@ -70,7 +70,7 @@ def import_shape():
     horiz, vert = images_import()
     binary_images_v = images_to_binary(vert)
     contour_list_v = BinaryEncodingInterpreter.code_cracker(binary_images_v)
-    pickle_dump(contour_list_v, 'MonkeyShapeFile')
+    #pickle_dump(contour_list_v, 'MonkeyShapeFile')
     return contour_list_v
 
 
